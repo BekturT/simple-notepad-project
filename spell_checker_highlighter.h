@@ -6,17 +6,18 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QRegularExpression>
+#include <utility>
 
 class spell_checker_highlighter : public QSyntaxHighlighter {
 public:
-    spell_checker_highlighter(QTextDocument *doc, const spell_checker& spell_checker)
-        : QSyntaxHighlighter(doc),  spell_checker(spell_checker){
+    spell_checker_highlighter(QTextDocument *doc, spell_checker  spell_checker)
+        : QSyntaxHighlighter(doc),  spell_checker(std::move(spell_checker)){
         format.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
         format.setUnderlineColor(Qt::red);
     }
 
     void highlightBlock(const QString &text) override {
-        const QRegularExpression word_regex("\\b\\w+\\b");
+        const QRegularExpression word_regex(R"(\b\w+\b)");
         auto iterator = word_regex.globalMatch(text);
 
         while (iterator.hasNext()) {

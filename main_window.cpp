@@ -11,6 +11,7 @@
 #include <QHeaderView>
 #include <QKeySequence>
 #include <QMenuBar>
+#include <QFontDialog>
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QStatusBar>
@@ -139,6 +140,18 @@ void main_window::setup_format_menu() {
             apply_transform(*transform);
         });
     }
+
+    const auto *font_action = format_menu->addAction("Font...");
+    connect(font_action, &QAction::triggered, this, [this] {
+        bool ok;
+        const QFont font = QFontDialog::getFont(&ok, editor->currentFont(), this);
+
+        if (ok) {
+            QTextCharFormat fmt;
+            fmt.setFont(font);
+            editor->mergeCurrentCharFormat(fmt);
+        }
+    });
 }
 
 void main_window::setup_format_toolbar() {
@@ -446,7 +459,7 @@ void main_window::show_context_menu(const QPoint &pos) {
             for (const auto &s : options) {
                 QAction *action = menu->addAction(QString::fromStdString(s));
 
-                connect(action, &QAction::triggered, this, [this, cursor, s]() {
+                connect(action, &QAction::triggered, this, [cursor, s]() {
                     QTextCursor c = cursor;
                     c.beginEditBlock();
                     c.removeSelectedText();

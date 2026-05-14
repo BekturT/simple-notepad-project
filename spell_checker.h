@@ -30,7 +30,7 @@ public:
         std::string result;
         for (auto ch : word) {
             if (std::isalpha(static_cast<unsigned char>(ch))) {
-                result += std::tolower(ch);
+                result += static_cast<char>(std::tolower(ch));
             }
         }
 
