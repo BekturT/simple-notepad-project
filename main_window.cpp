@@ -41,6 +41,9 @@ main_window::main_window() {
     transforms.push_back(std::make_unique<sentence_case_transform>());
     transforms.push_back(std::make_unique<swap_case_transform>());
 
+    cursor_label = new QLabel(this);
+    statusBar()->addPermanentWidget(cursor_label);
+
     setup_file_menu();
     setup_edit_menu();
     setup_format_menu();
@@ -49,6 +52,7 @@ main_window::main_window() {
     setup_tools_menu();
 
     update_status_bar();
+    update_cursor_position();
 
     checker = spell_checker();
     checker.load_dictionary();
@@ -128,6 +132,10 @@ void main_window::setup_edit_menu() {
 
     connect(editor, &QTextEdit::textChanged, this, [this] {
         update_status_bar();
+    });
+
+    connect(editor, &QTextEdit::cursorPositionChanged, this, [this] {
+        update_cursor_position();
     });
 }
 
@@ -460,6 +468,15 @@ void main_window::update_status_bar() const {
     statusBar()->showMessage(QString("Words: %1  Lines: %2").arg(wordCount).arg(lineCount));
 }
 
+void main_window::update_cursor_position() const {
+    const QTextCursor cursor = editor->textCursor();
+
+    const int line = cursor.blockNumber() + 1;
+    const int column = cursor.positionInBlock() + 1;
+
+    cursor_label->setText(QString("Cursor Line: %1  Cursor Column: %2").arg(line).arg(column));
+}
+
 void main_window::show_context_menu(const QPoint &pos) {
     QTextCursor cursor = editor->cursorForPosition(pos);
 
@@ -474,7 +491,7 @@ void main_window::show_context_menu(const QPoint &pos) {
         if (!options.empty()) {
             menu->addSeparator();
 
-            for (const auto &s : options) {
+            for (const auto &s: options) {
                 QAction *action = menu->addAction(QString::fromStdString(s));
 
                 connect(action, &QAction::triggered, this, [cursor, s]() {
