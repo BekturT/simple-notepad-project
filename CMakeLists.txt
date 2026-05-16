@@ -4,7 +4,7 @@ project(ProjectOOP LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets PrintSupport)
 qt_standard_project_setup()
 
 qt_add_executable(
@@ -19,6 +19,6 @@ qt_add_executable(
         spell_checker.h
         spell_checker_highlighter.h
 )
-target_link_libraries(notepad PRIVATE Qt6::Widgets)
+target_link_libraries(notepad PRIVATE Qt6::Widgets Qt6::PrintSupport)
 
 

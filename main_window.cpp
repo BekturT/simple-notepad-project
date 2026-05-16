@@ -13,6 +13,8 @@
 #include <QKeySequence>
 #include <QMenuBar>
 #include <QFontDialog>
+#include <QPrinter>
+#include <QPrintDialog>
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QStatusBar>
@@ -96,6 +98,20 @@ void main_window::setup_file_menu() {
     const auto *action_exit = file_menu->addAction("Exit");
     connect(action_exit, &QAction::triggered, this, [] {
         QApplication::quit();
+    });
+
+    file_menu->addSeparator();
+
+    const auto *action_print = file_menu->addAction("Print...");
+    connect(action_print, &QAction::triggered, this, [this] {
+        QPrinter printer(QPrinter::HighResolution);
+        QPrintDialog dlg(&printer, this);
+
+        if (dlg.exec() != QDialog::Accepted) {
+            return;
+        }
+
+        editor->print(&printer);
     });
 }
 
