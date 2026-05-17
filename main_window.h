@@ -36,6 +36,8 @@ private:
 
     void setup_tools_menu();
 
+    void setup_view_menu();
+
     void open_file();
 
     void save_file();
@@ -75,6 +77,8 @@ private:
     spell_checker_highlighter *highlighter;
 
     QLabel *cursor_label;
+
+    int current_zoom;
 };
 
 #endif // MAIN_WINDOW_H

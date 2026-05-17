@@ -52,6 +52,7 @@ main_window::main_window() {
     setup_format_toolbar();
     setup_search_menu();
     setup_tools_menu();
+    setup_view_menu();
 
     update_status_bar();
     update_cursor_position();
@@ -62,6 +63,8 @@ main_window::main_window() {
 
     editor->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(editor, &QWidget::customContextMenuRequested, this, &main_window::show_context_menu);
+
+    current_zoom = 0;
 }
 
 main_window::~main_window() = default;
@@ -256,6 +259,36 @@ void main_window::setup_tools_menu() {
     const auto *action_check_spelling = tools_menu->addAction("Check Spelling...");
     connect(action_check_spelling, &QAction::triggered, this, [this] {
         highlighter->rehighlight();
+    });
+}
+
+void main_window::setup_view_menu() {
+    auto *view_menu = menuBar()->addMenu("View");
+
+    auto *action_zoom_in = view_menu->addAction("Zoom in");
+    action_zoom_in->setShortcut(QKeySequence("Ctrl++"));
+    connect(action_zoom_in, &QAction::triggered, this, [this] {
+        editor->zoomIn(1);
+        current_zoom++;
+    });
+
+    auto *action_zoom_out = view_menu->addAction("Zoom out");
+    action_zoom_out->setShortcut(QKeySequence("Ctrl+-"));
+    connect(action_zoom_out, &QAction::triggered, this, [this] {
+        editor->zoomOut(1);
+        current_zoom--;
+    });
+
+    auto *action_reset = view_menu->addAction("Reset Zoom");
+    action_reset->setShortcut(QKeySequence("Ctrl+0"));
+    connect(action_reset, &QAction::triggered, this, [this] {
+        if (current_zoom > 0) {
+            editor->zoomOut(current_zoom);
+        } else if (current_zoom < 0) {
+            editor->zoomIn(-current_zoom);
+        }
+
+        current_zoom = 0;
     });
 }
 
